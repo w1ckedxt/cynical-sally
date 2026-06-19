@@ -32,10 +32,11 @@ export function trackEvent(
       deviceId,
       source: "cli",
       properties: {
+        ...properties,
+        // First-party telemetry dimensions win — a caller can't overwrite them.
         version,
         os: process.platform,
         node: process.version,
-        ...properties,
       },
     }),
     signal: AbortSignal.timeout(PING_TIMEOUT_MS),
