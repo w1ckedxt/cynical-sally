@@ -216,6 +216,9 @@ export interface ShareCardRequest {
   score?: number;
   lang?: string;
   subject?: string;
+  /** Optional framing hint for the public card. "brag" celebrates a high score,
+   *  "receipt" frames it as competence (issues caught). Backend may honor or ignore. */
+  style?: "brag" | "receipt";
 }
 
 export interface ShareCardResponse {

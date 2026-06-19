@@ -28,6 +28,20 @@ export function savageLine(response: RoastResponse): string {
   return firstSentence || "No notes. That's the scariest part.";
 }
 
+/** Receipt-style one-liner — frames the roast as competence (issues caught),
+ *  which is far more shareable for a dev than a low score alone. */
+export function receiptLine(response: RoastResponse): string {
+  const n = response.data.issues?.length ?? response.data.actionable_fixes?.length ?? 0;
+  const where = (() => {
+    const remote = getGitHubRemote();
+    return remote ? `${remote.owner}/${remote.repo}` : "my code";
+  })();
+  if (n > 0) {
+    return `Sally found ${n} issue${n !== 1 ? "s" : ""} in ${where} · ${response.data.score.toFixed(1)}/10`;
+  }
+  return `Sally roasted ${where} · ${response.data.score.toFixed(1)}/10`;
+}
+
 /** Up to two short findings: real issues first, then fixes, then observations. */
 function topFindings(response: RoastResponse): string[] {
   const { data, voice } = response;
@@ -125,6 +139,8 @@ function saveCard(response: RoastResponse): string | null {
     const filepath = join(dir, filename);
 
     const md: string[] = [];
+    md.push(`**${receiptLine(response)}**`);
+    md.push("");
     md.push("```");
     md.push(plainCard(response));
     md.push("```");

@@ -136,16 +136,40 @@ sally roast [paths...] [options]
   --share               Create a public share link (cynicalsally.com/card/…) — score + sneer only, never code
 ```
 
+## Get your repo's verdict — and a badge to prove it
+
+Let Sally judge your whole repo and hand you a README badge with the score baked in:
+
+```bash
+sally verdict
+```
+
+She scores the repo, then prints ready-to-paste badge markdown:
+
+```markdown
+[![Cynical Sally Verdict](https://cynicalsally.com/api/v1/badge/repo/you/repo)](https://cynicalsally.com)
+```
+
+Score an 8 or higher and the badge is a flex worth wearing. Score lower and, well —
+it's an honest signal that you're shipping anyway. Either way the badge links back,
+so every README that wears it does the bragging for you.
+
 ---
 
 <h2 align="center">Sally's Full Suite</h2>
 
 <p align="center">
-  <em>6 tools. Unlimited usage. The most honest code reviewer you'll ever work with — in your terminal and your AI editor.</em>
+  <em>Six tools, three jobs. The most honest code reviewer you'll ever work with — in your terminal and your AI editor.</em>
 </p>
 
 <p align="center">
   <img src="assets/full-suite.png" alt="Sally's Full Suite" width="600" />
+</p>
+
+<p align="center">
+  <strong>Ship faster</strong> — <code>review-pr</code> + <code>refactor</code>  ·  
+  <strong>Be less embarrassing</strong> — <code>explain</code> + <code>brainstorm</code>  ·  
+  <strong>Polish for humans</strong> — <code>frontend</code> + <code>marketing</code>
 </p>
 
 ---
@@ -339,6 +363,7 @@ Run `sally mcp` in your terminal to see setup instructions.
 | Command | Description |
 |---------|-------------|
 | `sally roast [paths...]` | Review files, directories, or git changes |
+| `sally verdict` | Score your repo + get a README badge |
 | `sally explain [file]` | Explain what code actually does |
 | `sally refactor [file]` | Refactoring with before/after code |
 | `sally review-pr [pr]` | Review a PR diff |

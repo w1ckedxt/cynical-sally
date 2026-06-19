@@ -28,6 +28,11 @@ import { getGitHubRemote } from "./utils/git.js";
 /** Sally only reads code and calls her backend — she never modifies the user's files. */
 const SALLY_ANNOTATIONS = { readOnlyHint: true, openWorldHint: true } as const;
 
+/** Signature line appended to every tool response — keeps Sally in the picture
+ *  inside the editor and gently surfaces the badge/CLI without nagging. */
+const SALLY_SIGNATURE =
+  "\n---\n*Roasted by Cynical Sally · `sally verdict` for a repo badge · cynicalsally.com*";
+
 /**
  * Resolve review files from inline `files` or from `paths`, also reporting which
  * paths were held back and why. Paths are read locally with the same safety as
@@ -250,6 +255,7 @@ server.registerTool(
       }
 
       parts.push(`\n*${response.meta.mode === "full_truth" ? "Full Truth" : "Quick Roast"} • ${response.meta.files_reviewed} files • ${response.meta.model}*`);
+      parts.push(SALLY_SIGNATURE);
 
       return {
         content: [{ type: "text", text: parts.join("\n") }],
@@ -344,6 +350,7 @@ async function runMcpTool(
     }
 
     parts.push(`\n*${toolName} • ${response.meta.model}*`);
+    parts.push(SALLY_SIGNATURE);
 
     return { content: [{ type: "text", text: parts.join("\n") }] };
   } catch (err) {

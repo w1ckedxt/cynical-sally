@@ -161,7 +161,12 @@ export const verdictCommand = new Command("verdict")
 
         // ── Badge output ──
         console.log();
-        console.log(chalk.magenta.bold("  Add this to your README:"));
+        const score = response.data?.score ?? 0;
+        if (score >= 8) {
+          console.log(chalk.green.bold("  That's a gold-tier flex. ") + chalk.gray("Wear it where people can see it:"));
+        } else {
+          console.log(chalk.magenta.bold("  Add this to your README:"));
+        }
         console.log();
         console.log(chalk.white(`  ${response.verdict.badge_markdown}`));
         console.log();

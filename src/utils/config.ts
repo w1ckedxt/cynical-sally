@@ -14,6 +14,9 @@ interface SallyConfig {
   roast_count?: number;
   star_hint_shown?: boolean;
   install_pinged?: boolean;
+  first_roast_pinged?: boolean;
+  verdict_hint_shown?: boolean;
+  share_hint_shown?: boolean;
 }
 
 function ensureConfigDir(): void {
@@ -89,6 +92,11 @@ export function showPrivacyNotice(): boolean {
   return true;
 }
 
+/** All-time completed roasts for this install (0 if none yet). */
+export function getRoastCount(): number {
+  return readConfig().roast_count ?? 0;
+}
+
 /** Count a completed roast. Returns the new all-time total for this install. */
 export function bumpRoastCount(): number {
   const config = readConfig();
@@ -115,6 +123,40 @@ export function showStarHint(roastCount: number): boolean {
   const config = readConfig();
   if (config.star_hint_shown) return false;
   config.star_hint_shown = true;
+  writeConfig(config);
+  return true;
+}
+
+/** Whether the one-time "first roast" event has already been sent for this install. */
+export function hasFirstRoastPinged(): boolean {
+  return !!readConfig().first_roast_pinged;
+}
+
+/** Mark the first-roast event as sent so it never fires again for this install. */
+export function markFirstRoastPinged(): void {
+  const config = readConfig();
+  config.first_roast_pinged = true;
+  writeConfig(config);
+}
+
+/**
+ * Show the "get a badge for your README" nudge once, after the user keeps
+ * coming back — but only in a repo where a verdict badge actually makes sense.
+ */
+export function showVerdictHint(roastCount: number): boolean {
+  if (roastCount < 2) return false;
+  const config = readConfig();
+  if (config.verdict_hint_shown) return false;
+  config.verdict_hint_shown = true;
+  writeConfig(config);
+  return true;
+}
+
+/** Show the "this is shareable" nudge once, at a moment of peak delight. */
+export function showShareHint(): boolean {
+  const config = readConfig();
+  if (config.share_hint_shown) return false;
+  config.share_hint_shown = true;
   writeConfig(config);
   return true;
 }

@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { writeFileSync, mkdirSync, existsSync, openSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, openSync, statSync, truncateSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
 import { exec } from "node:child_process";
@@ -44,6 +44,17 @@ export function spawnBackgroundWorker(args: string[], cwd: string): void {
   ensureResultsDir();
   const sallyBin = process.argv[1];
   const logFile = join(homedir(), ".sally", "bg.log");
+
+  // Cap the background log so it can't grow without bound across many runs.
+  const MAX_LOG_BYTES = 256 * 1024;
+  try {
+    if (existsSync(logFile) && statSync(logFile).size > MAX_LOG_BYTES) {
+      truncateSync(logFile, 0);
+    }
+  } catch {
+    // Non-critical — worst case the log just keeps its previous size.
+  }
+
   const out = openSync(logFile, "a", 0o600);
 
   const child = spawn(process.execPath, [sallyBin, "roast", ...args, "--bg-worker"], {

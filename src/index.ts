@@ -20,6 +20,9 @@ import {
 import { verdictCommand } from "./commands/verdict.js";
 import { printSally } from "./utils/output.js";
 import { trackInstall } from "./utils/install.js";
+import { runRoast } from "./commands/roast.js";
+import { askConfirm } from "./utils/prompt.js";
+import { getRoastCount } from "./utils/config.js";
 
 // One-time, fire-and-forget install ping (no-op after the first successful run).
 trackInstall();
@@ -31,8 +34,8 @@ program
   .description(
     "Brutally honest code reviews.\nBecause 'You're absolutely right' is probably absolutely wrong."
   )
-  .version("0.5.2")
-  .action(() => {
+  .version("0.6.0")
+  .action(async () => {
     // `sally` with no args → welcome message
     printSally();
     console.log();
@@ -43,7 +46,7 @@ program
     console.log(chalk.cyan("    sally roast") + chalk.gray("                    Roast your code"));
     console.log(chalk.cyan("    sally roast --staged") + chalk.gray("           Roast staged changes"));
     console.log(chalk.cyan("    sally roast src/") + chalk.gray("              Roast a directory"));
-    console.log(chalk.cyan("    sally verdict") + chalk.gray("                  Judge your repo + get a badge\n"));
+    console.log(chalk.cyan("    sally verdict") + chalk.gray("                  Score your repo + get a README badge\n"));
 
     console.log(chalk.white.bold("  Premium Tools (1 free trial each):"));
     console.log(chalk.cyan("    sally explain") + chalk.gray(" file.ts          What does this code do?"));
@@ -62,7 +65,24 @@ program
     console.log(chalk.cyan("    sally login") + chalk.gray(" you@email.com      Link your account"));
     console.log(chalk.cyan("    sally results") + chalk.gray("                  View background reviews\n"));
 
-    console.log(chalk.gray("  Works in your terminal AND as MCP tool in Claude Code / Cursor."));
+    console.log(chalk.gray("  Works in your terminal AND as MCP tool in Claude Code / Cursor.\n"));
+
+    // First run, interactive terminal → offer a roast right now instead of
+    // leaving them at a wall of commands. Value in 20 seconds.
+    if (getRoastCount() === 0 && process.stdout.isTTY && process.stdin.isTTY) {
+      const yes = await askConfirm(
+        chalk.magenta("  Want me to roast this directory right now? ") + chalk.gray("(Y/n) "),
+        true,
+      );
+      if (yes) {
+        console.log();
+        await runRoast(["."], { mode: "quick", tone: "cynical", lang: "en" });
+        return;
+      }
+      console.log(chalk.gray("\n  Suit yourself. Run ") + chalk.cyan("sally roast") + chalk.gray(" when you're brave.\n"));
+      return;
+    }
+
     console.log(chalk.gray("  Run ") + chalk.cyan("sally roast") + chalk.gray(" to get started.\n"));
   });
 

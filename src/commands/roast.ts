@@ -11,9 +11,39 @@ import { printDryRun } from "../utils/dryrun.js";
 import { printRoastCard, savageLine } from "../utils/card.js";
 import { askBackground, spawnBackgroundWorker, saveResult, sendNotification } from "../utils/background.js";
 import { getFlavor } from "../utils/flavor.js";
-import { showToolsHint, showPrivacyNotice, getEmail, bumpRoastCount, showStarHint } from "../utils/config.js";
+import {
+  showToolsHint, showPrivacyNotice, getEmail, bumpRoastCount, showStarHint,
+  hasFirstRoastPinged, markFirstRoastPinged, showVerdictHint, showShareHint,
+} from "../utils/config.js";
+import { trackEvent } from "../utils/track.js";
+import { recordIssues } from "../utils/memory.js";
 import { isGitRepo, getStagedChanges, getUnstagedChanges, getLastCommitDiff, getBranchDiff, parseDiffToFiles, getGitHubRemote } from "../utils/git.js";
 import type { ReviewFile, SkippedFile } from "../utils/files.js";
+
+/** Options accepted by a roast run — mirrors the command's flags so the guided
+ *  first-run flow and the `roast` command can share one implementation. */
+export interface RoastOptions {
+  staged?: boolean;
+  diff?: string;
+  mode?: string;
+  tone?: string;
+  lang?: string;
+  json?: boolean;
+  failUnder?: number;
+  ci?: boolean;
+  bg?: boolean;
+  dryRun?: boolean;
+  card?: boolean;
+  share?: boolean;
+  bgWorker?: boolean;
+}
+
+/** Bucket a 0–10 score into a coarse band so analytics never carry exact code signal. */
+function scoreBucket(score: number): string {
+  if (score < 4) return "0-4";
+  if (score < 7) return "4-7";
+  return "7-10";
+}
 
 export const roastCommand = new Command("roast")
   .description("Roast your code. Files, directories, staged changes, or branch diffs.")
@@ -31,7 +61,9 @@ export const roastCommand = new Command("roast")
   .option("--card", "Print a shareable roast card after the review")
   .option("--share", "Create a public share link for this roast — only the score + sneer go public, never your code")
   .option("--bg-worker")
-  .action(async (paths: string[], options) => {
+  .action(runRoast);
+
+export async function runRoast(paths: string[], options: RoastOptions): Promise<void> {
     // ── Collect files ──────────────────────────────────────────────────
     let files: ReviewFile[] = [];
     let skipped: SkippedFile[] = [];
@@ -196,8 +228,8 @@ export const roastCommand = new Command("roast")
         if (options.staged) bgArgs.push("--staged");
         if (options.diff) bgArgs.push("--diff", options.diff);
         bgArgs.push("-m", "full_truth");
-        if (options.tone !== "cynical") bgArgs.push("--tone", options.tone);
-        if (options.lang !== "en") bgArgs.push("--lang", options.lang);
+        if (options.tone && options.tone !== "cynical") bgArgs.push("--tone", options.tone);
+        if (options.lang && options.lang !== "en") bgArgs.push("--lang", options.lang);
 
         console.log(chalk.magenta(`  ${f.bg_confirmed}`));
         console.log(chalk.gray(`\n  ${f.bg_results_hint}\n`));
@@ -241,6 +273,24 @@ export const roastCommand = new Command("roast")
       } else {
         displayRoast(response);
 
+        const score = response.data.score;
+        const remote = getGitHubRemote();
+
+        // One-time "first roast happened" event — the activation signal that
+        // tells us how many installs ever reach real value. Score is bucketed;
+        // no code, paths, or content ever leave. Fire-and-forget.
+        if (!hasFirstRoastPinged()) {
+          trackEvent("CLI-FIRST-ROAST", { mode, score_bucket: scoreBucket(score) })
+            .then((ok) => { if (ok) markFirstRoastPinged(); });
+        }
+
+        // Recurring-sin memory (full_truth): "4th time you've done this".
+        const sinLine = recordIssues(response);
+        if (sinLine) {
+          console.log(chalk.gray("  " + sinLine));
+          console.log();
+        }
+
         // Shareable roast card (--card)
         if (options.card) {
           printRoastCard(response);
@@ -249,12 +299,12 @@ export const roastCommand = new Command("roast")
         // Public share link (--share) — publishes only the score + sneer, never code
         if (options.share) {
           try {
-            const remote = getGitHubRemote();
             const shared = await createShareCard({
               sneer: savageLine(response),
-              score: response.data.score,
+              score,
               lang: response.meta.lang,
               subject: remote ? `${remote.owner}/${remote.repo}` : undefined,
+              style: score >= 8 ? "brag" : "receipt",
             });
             console.log(chalk.gray("  🔗 Share your shame: ") + chalk.cyan(shared.url));
             console.log();
@@ -289,12 +339,27 @@ export const roastCommand = new Command("roast")
           }
         }
 
-        // Star nudge — once per install, after the third roast
-        if (showStarHint(bumpRoastCount())) {
+        // ── One growth nudge per run, by priority: shareable win → badge → star ──
+        const roastCount = bumpRoastCount();
+        if (!options.share && !options.card && !!process.stdout.isTTY && score >= 8 && showShareHint()) {
+          // Receipt framing — a flex, not a humiliation. Devs share competence.
+          console.log(chalk.gray("  That's a ") + chalk.green(`${score.toFixed(1)}/10`) + chalk.gray(" — objectively shareable. Publish a card (score + one-liner only,"));
+          console.log(chalk.gray("  never your code): ") + chalk.cyan("sally roast --share"));
+          console.log();
+        } else if (remote && roastCount >= 2 && showVerdictHint(roastCount)) {
+          // Badge loop — every README that adds Sally's badge markets Sally.
+          console.log(chalk.gray("  Want a verdict badge for ") + chalk.cyan(`${remote.owner}/${remote.repo}`) + chalk.gray("'s README?"));
+          console.log(chalk.gray("  Run ") + chalk.cyan("sally verdict") + chalk.gray(" — slap my judgment on your repo."));
+          console.log();
+        } else if (showStarHint(roastCount)) {
           console.log(chalk.gray("  Three roasts in and you keep coming back. Sweet. Star the repo"));
           console.log(chalk.gray("  so I can pretend I'm popular: ") + chalk.cyan("github.com/w1ckedxt/cynical-sally"));
           console.log();
         }
+
+        // Signature footer — subtle, screenshot-friendly. Spreads in pastes.
+        console.log(chalk.gray(`  ─ Roasted by Cynical Sally · ${score.toFixed(1)}/10 · cynicalsally.com`));
+        console.log();
       }
 
       if (options.failUnder !== undefined && response.data.score < options.failUnder) {
@@ -310,4 +375,4 @@ export const roastCommand = new Command("roast")
       handleApiError(err);
       process.exit(1);
     }
-  });
+}

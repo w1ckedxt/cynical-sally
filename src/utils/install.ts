@@ -1,12 +1,5 @@
-import { createRequire } from "node:module";
-import { getDeviceId, hasInstallPinged, markInstallPinged } from "./config.js";
-import { API_BASE } from "./api.js";
-
-const require = createRequire(import.meta.url);
-// dist/utils/install.js → ../../package.json (repo root, both local and published)
-const { version } = require("../../package.json") as { version: string };
-
-const PING_TIMEOUT_MS = 5_000;
+import { hasInstallPinged, markInstallPinged } from "./config.js";
+import { trackEvent } from "./track.js";
 
 /**
  * Fire a one-time "CLI installed" event on the first run of this install.
@@ -21,27 +14,7 @@ const PING_TIMEOUT_MS = 5_000;
 export function trackInstall(): void {
   if (hasInstallPinged()) return;
 
-  const deviceId = getDeviceId();
-
-  fetch(`${API_BASE}/api/v1/track`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      eventCode: "CLI-INSTALL",
-      deviceId,
-      source: "cli",
-      properties: {
-        version,
-        os: process.platform,
-        node: process.version,
-      },
-    }),
-    signal: AbortSignal.timeout(PING_TIMEOUT_MS),
-  })
-    .then((res) => {
-      if (res.ok) markInstallPinged();
-    })
-    .catch(() => {
-      // Offline or backend down — leave the flag unset so the next run retries.
-    });
+  trackEvent("CLI-INSTALL").then((ok) => {
+    if (ok) markInstallPinged();
+  });
 }

@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "cynical-sally",
   "display_name": "Cynical Sally",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Brutally honest code reviews: scores, real issues, and usable fixes. CLI + MCP server.",
   "long_description": "Cynical Sally is a brutally honest senior-engineer code reviewer for Claude Code, Cursor & Windsurf. She gives a 0–10 score, evidence-backed issues, and fixes you can actually use. 8 tools: roast, explain, review-pr, refactor, brainstorm, frontend, marketing, and usage. Free tier, no account needed.",
   "author": {
