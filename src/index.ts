@@ -34,7 +34,7 @@ program
   .description(
     "Brutally honest code reviews.\nBecause 'You're absolutely right' is probably absolutely wrong."
   )
-  .version("0.6.0")
+  .version("0.6.1")
   .action(async () => {
     // `sally` with no args → welcome message
     printSally();
@@ -46,7 +46,7 @@ program
     console.log(chalk.cyan("    sally roast") + chalk.gray("                    Roast your code"));
     console.log(chalk.cyan("    sally roast --staged") + chalk.gray("           Roast staged changes"));
     console.log(chalk.cyan("    sally roast src/") + chalk.gray("              Roast a directory"));
-    console.log(chalk.cyan("    sally verdict") + chalk.gray("                  Score your repo + get a README badge\n"));
+    console.log(chalk.cyan("    sally verdict") + chalk.gray("                  Score your repo + get a badge\n"));
 
     console.log(chalk.white.bold("  Premium Tools (1 free trial each):"));
     console.log(chalk.cyan("    sally explain") + chalk.gray(" file.ts          What does this code do?"));
