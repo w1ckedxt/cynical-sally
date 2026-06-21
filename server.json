@@ -6,12 +6,12 @@
     "url": "https://github.com/w1ckedxt/cynical-sally",
     "source": "github"
   },
-  "version": "0.6.1",
+  "version": "0.6.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@cynicalsally/cli",
-      "version": "0.6.1",
+      "version": "0.6.2",
       "runtimeHint": "npx",
       "transport": { "type": "stdio" },
       "packageArguments": [
