@@ -251,12 +251,37 @@ export async function createShareCard(params: ShareCardRequest): Promise<ShareCa
 /** Request magic link login */
 export async function requestMagicLink(email: string): Promise<{ sent: boolean; message?: string; error?: string }> {
   const deviceId = getDeviceId();
-  const res = await fetch(`${API_BASE}/api/v1/auth/magic-link`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, deviceId }),
-  });
-  return await res.json();
+  const maxAttempts = 3;
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/auth/magic-link`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, deviceId }),
+        signal: AbortSignal.timeout(30_000),
+      });
+
+      // A 5xx is a transient server hiccup (cold DB/queue connection). Retry it —
+      // but only the server fault, never a 4xx like rate-limit (429) or bad email.
+      if (res.status >= 500 && attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
+        continue;
+      }
+
+      return (await res.json()) as { sent: boolean; message?: string; error?: string };
+    } catch (err) {
+      // Network error or timeout — worth another try.
+      lastError = err;
+      if (attempt < maxAttempts) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * attempt));
+        continue;
+      }
+    }
+  }
+
+  throw lastError ?? new Error("Failed to request magic link");
 }
 
 /** Unlink the current device from any server-side account/session mapping */
