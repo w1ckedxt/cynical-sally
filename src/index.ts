@@ -18,6 +18,7 @@ import {
   marketingCommand,
 } from "./commands/tools.js";
 import { verdictCommand } from "./commands/verdict.js";
+import { badgeCommand } from "./commands/badge.js";
 import { printSally } from "./utils/output.js";
 import { trackInstall } from "./utils/install.js";
 import { runRoast } from "./commands/roast.js";
@@ -46,7 +47,8 @@ program
     console.log(chalk.cyan("    sally roast") + chalk.gray("                    Roast your code"));
     console.log(chalk.cyan("    sally roast --staged") + chalk.gray("           Roast staged changes"));
     console.log(chalk.cyan("    sally roast src/") + chalk.gray("              Roast a directory"));
-    console.log(chalk.cyan("    sally verdict") + chalk.gray("                  Score your repo + get a badge\n"));
+    console.log(chalk.cyan("    sally verdict") + chalk.gray("                  Score your repo + get a badge"));
+    console.log(chalk.cyan("    sally badge --add") + chalk.gray("              Put that badge in your README\n"));
 
     console.log(chalk.white.bold("  Premium Tools (1 free trial each):"));
     console.log(chalk.cyan("    sally explain") + chalk.gray(" file.ts          What does this code do?"));
@@ -88,6 +90,7 @@ program
 
 program.addCommand(roastCommand);
 program.addCommand(verdictCommand);
+program.addCommand(badgeCommand);
 program.addCommand(loginCommand);
 program.addCommand(logoutCommand);
 program.addCommand(usageCommand);

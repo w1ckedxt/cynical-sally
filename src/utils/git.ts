@@ -47,6 +47,20 @@ export function getBranchDiff(branch: string): string {
 }
 
 /**
+ * Absolute path of the repository root (where README.md lives).
+ */
+export function getRepoRoot(): string | null {
+  try {
+    return execSync("git rev-parse --show-toplevel", {
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Detect GitHub remote from git config.
  * Handles: https://github.com/owner/repo.git, git@github.com:owner/repo.git
  *

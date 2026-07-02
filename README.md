@@ -154,6 +154,16 @@ Score an 8 or higher and the badge is a flex worth wearing. Score lower and, wel
 it's an honest signal that you're shipping anyway. Either way the badge links back,
 so every README that wears it does the bragging for you.
 
+Too lazy to copy-paste? Sally will hang it up herself:
+
+```bash
+sally badge --add   # inserts the badge into README.md, right under the title
+sally badge         # just prints the markdown (and your current score)
+```
+
+The badge image updates automatically on every new `sally verdict` — add it once,
+judged forever.
+
 ---
 
 <h2 align="center">Sally's Full Suite</h2>
@@ -364,6 +374,7 @@ Run `sally mcp` in your terminal to see setup instructions.
 |---------|-------------|
 | `sally roast [paths...]` | Review files, directories, or git changes |
 | `sally verdict` | Score your repo + get a README badge |
+| `sally badge [--add]` | Print your badge markdown, or add it to README.md |
 | `sally explain [file]` | Explain what code actually does |
 | `sally refactor [file]` | Refactoring with before/after code |
 | `sally review-pr [pr]` | Review a PR diff |

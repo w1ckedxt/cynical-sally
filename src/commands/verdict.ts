@@ -173,6 +173,8 @@ export const verdictCommand = new Command("verdict")
         console.log(chalk.gray("  Or use shields.io:"));
         console.log(chalk.gray(`  ${response.verdict.shields_badge_markdown}`));
         console.log();
+        console.log(chalk.gray("  Can't be bothered to copy-paste? ") + chalk.cyan("sally badge --add") + chalk.gray(" puts it in your README for you."));
+        console.log();
       }
 
       // ── CI/fail-under ──
