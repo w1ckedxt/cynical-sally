@@ -20,5 +20,5 @@
     "cynical-sally"
   ],
   "logo": "assets/logo.png",
-  "mcpServers": ".cursor-plugin/mcp.json"
+  "mcpServers": ".mcp.json"
 }
