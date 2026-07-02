@@ -1,6 +1,6 @@
 {
   "name": "@cynicalsally/cli",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "mcpName": "io.github.w1ckedxt/cynicalsally",
   "description": "Brutally honest code reviews. Because 'You're absolutely right' is probably absolutely wrong.",
   "author": "Thomas Geelens",
