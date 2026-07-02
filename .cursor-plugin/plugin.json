@@ -1,0 +1,24 @@
+{
+  "name": "cynical-sally",
+  "version": "0.7.0",
+  "description": "Brutally honest AI code reviews. Roast files, review PRs, refactor, and get your repo scored — by the senior engineer your code hoped it'd never meet.",
+  "author": {
+    "name": "Thomas Geelens",
+    "url": "https://cynicalsally.com"
+  },
+  "homepage": "https://cynicalsally.com",
+  "repository": "https://github.com/w1ckedxt/cynical-sally",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "mcp",
+    "code-quality",
+    "pr-review",
+    "refactoring",
+    "roast",
+    "ai-review",
+    "cynical-sally"
+  ],
+  "logo": "assets/logo.png",
+  "mcpServers": ".cursor-plugin/mcp.json"
+}
