@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/w1ckedxt-cynical-sally-badge.png)](https://mseep.ai/app/w1ckedxt-cynical-sally)
+
 <!-- mcp-name: io.github.w1ckedxt/cynicalsally -->
 
 <p align="center">
