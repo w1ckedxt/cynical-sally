@@ -23,6 +23,15 @@
   <a href="https://github.com/w1ckedxt/cynical-sally/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license" /></a>
 </p>
 
+<p align="center">
+  <a href="https://cursor.com/install-mcp?name=cynical-sally&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIkBjeW5pY2Fsc2FsbHkvY2xpIiwibWNwIl19">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://cursor.com/deeplink/mcp-install-dark.svg" />
+      <img src="https://cursor.com/deeplink/mcp-install-light.svg" alt="Add Cynical Sally to Cursor" height="32" />
+    </picture>
+  </a>
+</p>
+
 ---
 
 Your AI pair programmer is lying to you. Sally isn't.
@@ -322,7 +331,16 @@ claude mcp add cynical-sally -- npx @cynicalsally/cli mcp
 
 ### Cursor
 
-Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (per project):
+One click:
+
+<a href="https://cursor.com/install-mcp?name=cynical-sally&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsIkBjeW5pY2Fsc2FsbHkvY2xpIiwibWNwIl19">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://cursor.com/deeplink/mcp-install-dark.svg" />
+    <img src="https://cursor.com/deeplink/mcp-install-light.svg" alt="Add Cynical Sally to Cursor" height="32" />
+  </picture>
+</a>
+
+Or add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (per project):
 
 ```json
 {
