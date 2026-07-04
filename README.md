@@ -18,6 +18,7 @@
   <a href="https://www.npmjs.com/package/@cynicalsally/cli"><img src="https://img.shields.io/npm/v/@cynicalsally/cli.svg" alt="npm version" /></a>
   <a href="https://www.npmjs.com/package/@cynicalsally/cli"><img src="https://img.shields.io/npm/dm/@cynicalsally/cli.svg" alt="npm downloads" /></a>
   <a href="https://registry.modelcontextprotocol.io/?search=cynicalsally"><img src="https://img.shields.io/badge/MCP-Registry-8a2be2.svg" alt="MCP Registry" /></a>
+  <a href="https://cursor.directory/plugins/cynical-sally"><img src="https://img.shields.io/badge/Cursor-Directory-000000.svg" alt="Cursor Directory" /></a>
   <a href="https://glama.ai/mcp/servers/w1ckedxt/cynical-sally"><img src="https://glama.ai/mcp/servers/w1ckedxt/cynical-sally/badges/score.svg" alt="Glama score" /></a>
   <a href="https://github.com/w1ckedxt/cynical-sally/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="license" /></a>
 </p>
